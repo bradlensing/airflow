@@ -23,6 +23,7 @@ Assuming airflow is installed on computer or docker container
 ### DAGs
 
 - [Demo Dag](./1.1-DemoDAG.py)
-- [Demo Monthly Dag](./1.2-DemoMonthlyDAG.py)
-- [Demo Task and Dependencies](./1.3-DemoTaskAndDependenciesDAG.py)
+- [Monthly Interval Dag](./1.2-DemoMonthlyDAG.py)
+- [Tasks and Dependencies](./1.3-DemoTaskAndDependenciesDAG.py)
+- [Using Connections, Variables and Hooks to connect an S3 bucket and log out all the sub directories](./ConnectionsAndHooksAWSDAG.py)
 - [Creating Users Table - Fetching Data - Saving to CSV - Populating to DB Dag](./CompleteHandsOnIntroduction/0.1-CreatingTableDAG.py)

@@ -19,9 +19,10 @@ def complete():
     logging.info("Congrats, the mult-task pipeline is now completed!")
 
 dag = DAG(
-    dag_id='demo_task_and_dependencies',
+    dag_id='task_and_dependencies',
     schedule_interval="@hourly",
-    start_date=datetime.datetime.now() - datetime.timedelta(days=1)
+    start_date=datetime.datetime.now() - datetime.timedelta(days=1),
+    tags=['demo']
 )
 
 hello_world_task = PythonOperator(
