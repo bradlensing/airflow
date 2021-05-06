@@ -10,9 +10,9 @@ from airflow.operators.postgres_operator import PostgresOperator
 from airflow.operators.python import PythonOperator
 
 def load_data_to_redshift(*args, **kwargs):
-    aws_hook = AwsHook("aws_credentials")
+    aws_hook = AwsHook("aws_credentials", client_type='redshift')
     credentials = aws_hook.get_credentials()
-    redshift_hook = PostgresHook("redshift")
+    redshift_hook = PostgresHook('redshift')
     sql_stmt = sql_statements.COPY_ALL_TRIPS_SQL.format(credentials.access_key, credentials.secret_key)
     redshift_hook.run(sql_stmt)
 
@@ -32,6 +32,7 @@ create_table = PostgresOperator(
 
 copy_task = PythonOperator(
     task_id = 'copy_to_redshift',
+    provide_context=True,
     dag = dag,
     python_callable = load_data_to_redshift
     )

@@ -27,3 +27,6 @@ Assuming airflow is installed on computer or docker container
 - [Tasks and Dependencies](./1.3-DemoTaskAndDependenciesDAG.py)
 - [Using Connections, Variables and Hooks to connect an S3 bucket and log out all the sub directories](./ConnectionsAndHooksAWSDAG.py)
 - [Creating Users Table - Fetching Data - Saving to CSV - Populating to DB Dag](./CompleteHandsOnIntroduction/0.1-CreatingTableDAG.py)
+- [S3 to Redshift DAG](./04-Airflow/S3ToRedshiftDAG.py)
+  - [Create Redshift Cluster Notebook (.ipynb file)](./S3ToRedshiftCreation.ipynb)
+  - [Documentation on Pipeline Creation ](./S3ToRedshift.md)
