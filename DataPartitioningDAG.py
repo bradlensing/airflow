@@ -1,6 +1,9 @@
+#Instructions
+#1 - Modify the bikeshare DAG to load data month by month, instead of loading it all at once, every time. 
+#2 - Use time partitioning to parallelize the execution of the DAG.
+
 import datetime
 import logging
-import sql
 
 from airflow import DAG
 from airflow.contrib.hooks.aws_hook import AwsHook
@@ -15,7 +18,8 @@ def load_trip_data_to_redshift(*args, **kwargs):
     aws_hook = AwsHook("aws_credentials", client_type='redshift')
     credentials = aws_hook.get_credentials()
     redshift_hook = PostgresHook("redshift")
-    execution_date = kwargs["execution_date"]
+    execution_date = kwargs['execution_date']
+
     sql_stmt = sql_statements.COPY_MONTHLY_TRIPS_SQL.format(
         credentials.access_key,
         credentials.secret_key,
@@ -26,7 +30,6 @@ def load_trip_data_to_redshift(*args, **kwargs):
 
 
 def load_station_data_to_redshift(*args, **kwargs):
-    print(kwargs)
     aws_hook = AwsHook("aws_credentials", client_type='redshift')
     credentials = aws_hook.get_credentials()
     redshift_hook = PostgresHook("redshift")
@@ -37,25 +40,13 @@ def load_station_data_to_redshift(*args, **kwargs):
     redshift_hook.run(sql_stmt)
 
 
-def check_greater_than_zero(*args, **kwargs):
-    table = kwargs["params"]["table"]
-    redshift_hook = PostgresHook("redshift")
-    records = redshift_hook.get_records(f"SELECT COUNT(*) FROM {table}")
-    if len(records) < 1 or len(records[0]) < 1:
-        raise ValueError(f"Data quality check failed. {table} returned no results")
-    num_records = records[0][0]
-    if num_records < 1:
-        raise ValueError(f"Data quality check failed. {table} contained 0 rows")
-    logging.info(f"Data quality on table {table} check passed with {records[0][0]} records")
-
-
 dag = DAG(
-    's3_to_redshift_context_errors',
+    dag_id='data_partitioning',
     start_date=datetime.datetime(2018, 1, 1, 0, 0, 0, 0),
-    # end_date=datetime.datetime(2018, 12, 1, 0, 0, 0, 0),
+    # end_date=datetime.datetime(2019, 1, 1, 0, 0, 0, 0),
     schedule_interval='@monthly',
-    tags=['demo'],
-    max_active_runs=1
+    max_active_runs=1,
+    tags=['demo']
 )
 
 create_trips_table = PostgresOperator(
@@ -69,17 +60,7 @@ copy_trips_task = PythonOperator(
     task_id='load_trips_from_s3_to_redshift',
     dag=dag,
     python_callable=load_trip_data_to_redshift,
-    provide_context=True,
-    sla=datetime.timedelta(hours=1)
-)
-
-check_trips = PythonOperator(
-    task_id='check_trips_data',
-    dag=dag,
-    python_callable=check_greater_than_zero,
-    params={
-        'table': 'trips',
-    }
+    provide_context=True
 )
 
 create_stations_table = PostgresOperator(
@@ -92,32 +73,9 @@ create_stations_table = PostgresOperator(
 copy_stations_task = PythonOperator(
     task_id='load_stations_from_s3_to_redshift',
     dag=dag,
-    provide_context=True,
     python_callable=load_station_data_to_redshift,
-)
-
-check_stations = PythonOperator(
-    task_id='check_stations_data',
-    dag=dag,
-    python_callable=check_greater_than_zero,
-    provide_context=True,
-    params={
-        'table': 'stations',
-    }
-)
-
-location_traffic_task = PostgresOperator(
-    task_id = "calculate_location_traffic",
-    dag=dag,
-    postgres_conn_id="redshift",
-    sql = f"""
-        {sql_statements.LOCATION_TRAFFIC_SQL}
-        WHERE end_time > {{{{prev_ds}}}} AND end_time < {{{{next_ds}}}}
-    """
 )
 
 create_trips_table >> copy_trips_task
 create_stations_table >> copy_stations_task
-copy_stations_task >> check_stations
-copy_trips_task >> check_trips
-check_trips >> location_traffic_task
+
