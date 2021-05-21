@@ -1,3 +1,7 @@
+from datetime import datetime
+from pandas import json_normalize
+import json
+
 from airflow.models import DAG
 from airflow.providers.sqlite.operators.sqlite import SqliteOperator
 from airflow.providers.http.sensors.http import HttpSensor
@@ -5,9 +9,6 @@ from airflow.providers.http.operators.http import SimpleHttpOperator
 from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
 
-from datetime import datetime
-from pandas import json_normalize
-import json
 
 default_args = {
     'start_date': datetime(2021, 1,1)

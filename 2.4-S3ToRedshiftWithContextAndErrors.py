@@ -50,9 +50,9 @@ def check_greater_than_zero(*args, **kwargs):
 
 
 dag = DAG(
-    's3_to_redshift_context_errors',
+    dag_id='s3_to_redshift_context_errors',
     start_date=datetime.datetime(2018, 1, 1, 0, 0, 0, 0),
-    # end_date=datetime.datetime(2018, 12, 1, 0, 0, 0, 0),
+    end_date=datetime.datetime(2018, 12, 31, 0, 0, 0, 0),
     schedule_interval='@monthly',
     tags=['demo'],
     max_active_runs=1
