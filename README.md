@@ -4,9 +4,12 @@ Assuming airflow is installed on computer or docker container
 
 ### Running Airflow Locally
 
-1. airflow webserver --port 8080
-1. airflow scheduler
-1. In browser localhost:8080
+In 2 seperate terminal windows run following commands
+
+- $ airflow webserver --port 8080
+- $ airflow scheduler
+
+In browser visit localhost:8080
 
 ### Running Airflow through Docker
 
@@ -26,7 +29,7 @@ Assuming airflow is installed on computer or docker container
 - [Monthly Interval Dag](./1.2-DemoMonthlyDAG.py)
 - [Tasks and Dependencies](./1.3-DemoTaskAndDependenciesDAG.py)
 - [Using Connections, Variables and Hooks to connect an S3 bucket and log out all the sub directories](./ConnectionsAndHooksAWSDAG.py)
-- [Creating Users Table - Fetching Data - Saving to CSV - Populating to DB Dag](./CompleteHandsOnIntroduction/0.1-CreatingTableDAG.py)
-- [S3 to Redshift DAG](./04-Airflow/S3ToRedshiftDAG.py)
+- [Creating Users Table - Fetching Data - Saving to CSV - Populating to DB Dag](/CompleteIntro/0.1-CreatingTableDAG.py)
+- [S3 to Redshift DAG](./S3ToRedshiftDAG.py)
   - [Create Redshift Cluster Notebook (.ipynb file)](./S3ToRedshiftCreation.ipynb)
   - [Documentation on Pipeline Creation ](./S3ToRedshift.md)
